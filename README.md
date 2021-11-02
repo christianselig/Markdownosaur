@@ -39,7 +39,7 @@ label.attributedText = attributedString
 
 ## Performance
 
-It's fast! Tiny bit faster than the `NSAttributedString` implementation in iOS 15 (Apple's implementation is probably more powerful though). For reference on an iPhone 6S Plus (oldest device that still gets iOS 15), I took `test.md` (which is included, and is just the 'Example Result' source above repeated 8x over) and it took about 0.04 seconds on average.
+It's fast! Tiny bit faster than the `NSAttributedString` implementation in iOS 15 (Apple's implementation is probably more powerful though). For reference on an iPhone 6S Plus (oldest device that still gets iOS 15), I took `test.md` (which is included, and is just the 'Example Result' source above repeated 8x over) and it took about 0.04 seconds on average. This also compares to about 0.1 seconds on average for the same document using HTML -> NSAttributedString conversion via [DTCoreText](https://github.com/Cocoanetics/DTCoreText) (another excellent tool that I was using prior to this that handles a much wider HTML conversion).
 
 ## Thanks
 
