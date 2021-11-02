@@ -43,4 +43,4 @@ It's fast! Tiny bit faster than the `NSAttributedString` implementation in iOS 1
 
 ## Thanks
 
-Thanks to Apple for the awesome [Swift Markdown](https://github.com/apple/swift-markdown) library, and thanks to the [Down](https://github.com/johnxnguyen/Down) library for existing which helped me figure out how to tackle some aspects. 
+Thanks to Apple for the awesome [Swift Markdown](https://github.com/apple/swift-markdown) library, and thanks to the [Down](https://github.com/johnxnguyen/Down) library for existing which helped me figure out how to tackle some aspects. Thank you as well to [@icanzilb](https://twitter.com/icanzilb) and [@QuietMisdreavus](https://twitter.com/QuietMisdreavus) for answering questions! 
