@@ -28,7 +28,7 @@ Simply pass in the source Markdown and then use the attributed string for whatev
 
 ```swift
 let source = "Here is some **very** cool and simple Markdown"
-let document = Document.parsingRedditMarkdown(source: source)
+let document = Document(parsing: source)
 
 var markdownosaur = Markdownosaur()
 let attributedString = markdownosaur.attributedString(from: document)
