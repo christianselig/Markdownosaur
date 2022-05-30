@@ -8,14 +8,16 @@
 import UIKit
 import Markdown
 
-struct Markdownosaur: MarkupVisitor {
+public struct Markdownosaur: MarkupVisitor {
     let baseFontSize: CGFloat = 15.0
+
+    public init() {}
     
-    mutating func attributedString(from document: Document) -> NSAttributedString {
+    public mutating func attributedString(from document: Document) -> NSAttributedString {
         return visit(document)
     }
     
-    mutating func defaultVisit(_ markup: Markup) -> NSAttributedString {
+    mutating public func defaultVisit(_ markup: Markup) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for child in markup.children {
@@ -25,11 +27,11 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitText(_ text: Text) -> NSAttributedString {
+    mutating public func visitText(_ text: Text) -> NSAttributedString {
         return NSAttributedString(string: text.plainText, attributes: [.font: UIFont.systemFont(ofSize: baseFontSize, weight: .regular)])
     }
     
-    mutating func visitEmphasis(_ emphasis: Emphasis) -> NSAttributedString {
+    mutating public func visitEmphasis(_ emphasis: Emphasis) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for child in emphasis.children {
@@ -41,7 +43,7 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitStrong(_ strong: Strong) -> NSAttributedString {
+    mutating public func visitStrong(_ strong: Strong) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for child in strong.children {
@@ -53,7 +55,7 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitParagraph(_ paragraph: Paragraph) -> NSAttributedString {
+    mutating public func visitParagraph(_ paragraph: Paragraph) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for child in paragraph.children {
@@ -67,7 +69,7 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitHeading(_ heading: Heading) -> NSAttributedString {
+    mutating public func visitHeading(_ heading: Heading) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for child in heading.children {
@@ -83,7 +85,7 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitLink(_ link: Link) -> NSAttributedString {
+    mutating public func visitLink(_ link: Link) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for child in link.children {
@@ -97,11 +99,11 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitInlineCode(_ inlineCode: InlineCode) -> NSAttributedString {
+    mutating public func visitInlineCode(_ inlineCode: InlineCode) -> NSAttributedString {
         return NSAttributedString(string: inlineCode.code, attributes: [.font: UIFont.monospacedSystemFont(ofSize: baseFontSize - 1.0, weight: .regular), .foregroundColor: UIColor.systemGray])
     }
     
-    func visitCodeBlock(_ codeBlock: CodeBlock) -> NSAttributedString {
+    public func visitCodeBlock(_ codeBlock: CodeBlock) -> NSAttributedString {
         let result = NSMutableAttributedString(string: codeBlock.code, attributes: [.font: UIFont.monospacedSystemFont(ofSize: baseFontSize - 1.0, weight: .regular), .foregroundColor: UIColor.systemGray])
         
         if codeBlock.hasSuccessor {
@@ -111,7 +113,7 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitStrikethrough(_ strikethrough: Strikethrough) -> NSAttributedString {
+    mutating public func visitStrikethrough(_ strikethrough: Strikethrough) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for child in strikethrough.children {
@@ -123,7 +125,7 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitUnorderedList(_ unorderedList: UnorderedList) -> NSAttributedString {
+    mutating public func visitUnorderedList(_ unorderedList: UnorderedList) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         let font = UIFont.systemFont(ofSize: baseFontSize, weight: .regular)
@@ -164,7 +166,7 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitListItem(_ listItem: ListItem) -> NSAttributedString {
+    mutating public func visitListItem(_ listItem: ListItem) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for child in listItem.children {
@@ -178,7 +180,7 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitOrderedList(_ orderedList: OrderedList) -> NSAttributedString {
+    mutating public func visitOrderedList(_ orderedList: OrderedList) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for (index, listItem) in orderedList.listItems.enumerated() {
@@ -231,7 +233,7 @@ struct Markdownosaur: MarkupVisitor {
         return result
     }
     
-    mutating func visitBlockQuote(_ blockQuote: BlockQuote) -> NSAttributedString {
+    mutating public func visitBlockQuote(_ blockQuote: BlockQuote) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
         for child in blockQuote.children {
