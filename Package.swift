@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Markdownosaur",
-    platforms: [.iOS(.v15), .tvOS(.v15)],
+    platforms: [.iOS(.v15), .tvOS(.v15), .macOS(.v11)],
     products: [
         .library(
             name: "Markdownosaur",
