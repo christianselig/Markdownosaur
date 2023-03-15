@@ -5,7 +5,7 @@
 //  Created by Christian Selig on 2021-11-02.
 //
 
-#if os(iOS) || os(tvOS)
+#if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
 typealias TTFont = UIFont
 typealias TTFontDescriptor = UIFontDescriptor
@@ -18,6 +18,15 @@ typealias TTColor = NSColor
 #endif
 
 import Markdown
+
+#if os(watchOS)
+var systemGray: TTColor { TTColor.gray }
+var systemBlue: TTColor { TTColor.blue }
+#else
+var systemGray: TTColor { TTColor.systemGray }
+var systemBlue: TTColor { TTColor.systemBlue }
+#endif
+
 
 public struct Markdownosaur: MarkupVisitor {
     let baseFontSize: CGFloat = 15.0
@@ -122,11 +131,12 @@ public struct Markdownosaur: MarkupVisitor {
     }
     
     mutating public func visitInlineCode(_ inlineCode: InlineCode) -> NSAttributedString {
-        return NSAttributedString(string: inlineCode.code, attributes: [.font: TTFont.monospacedSystemFont(ofSize: baseFontSize - 1.0, weight: .regular), .foregroundColor: TTColor.systemGray])
+        return NSAttributedString(string: inlineCode.code, attributes: [.font: TTFont.monospacedSystemFont(ofSize: baseFontSize - 1.0, weight: .regular), .foregroundColor: systemGray])
+        
     }
     
     public func visitCodeBlock(_ codeBlock: CodeBlock) -> NSAttributedString {
-        let result = NSMutableAttributedString(string: codeBlock.code, attributes: [.font: TTFont.monospacedSystemFont(ofSize: baseFontSize - 1.0, weight: .regular), .foregroundColor: TTColor.systemGray])
+        let result = NSMutableAttributedString(string: codeBlock.code, attributes: [.font: TTFont.monospacedSystemFont(ofSize: baseFontSize - 1.0, weight: .regular), .foregroundColor: systemGray])
         
         if codeBlock.hasSuccessor {
             result.append(.singleNewline(withFontSize: baseFontSize))
@@ -277,7 +287,7 @@ public struct Markdownosaur: MarkupVisitor {
             let quoteAttributedString = visit(child).mutableCopy() as! NSMutableAttributedString
             quoteAttributedString.insert(NSAttributedString(string: "\t", attributes: quoteAttributes), at: 0)
             
-            quoteAttributedString.addAttribute(.foregroundColor, value: TTColor.systemGray)
+            quoteAttributedString.addAttribute(.foregroundColor, value: systemGray)
             
             result.append(quoteAttributedString)
         }
@@ -320,7 +330,7 @@ extension NSMutableAttributedString {
     }
     
     func applyLink(withURL url: URL?) {
-        addAttribute(.foregroundColor, value: TTColor.systemBlue)
+        addAttribute(.foregroundColor, value: systemBlue)
         
         if let url = url {
             addAttribute(.link, value: url)
@@ -328,7 +338,7 @@ extension NSMutableAttributedString {
     }
     
     func applyBlockquote() {
-        addAttribute(.foregroundColor, value: TTColor.systemGray)
+        addAttribute(.foregroundColor, value: systemGray)
     }
     
     func applyHeading(withLevel headingLevel: Int) {
