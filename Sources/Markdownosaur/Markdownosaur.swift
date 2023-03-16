@@ -74,6 +74,17 @@ public struct Markdownosaur: MarkupVisitor {
         return result
     }
     
+    mutating public func visitSoftBreak(_ softBreak: SoftBreak) -> NSAttributedString {
+        let result = NSMutableAttributedString()
+
+        for child in softBreak.children {
+            result.append(visit(child))
+        }
+        result.append (.singleNewline(withFontSize: baseFontSize))
+
+        return result
+    }
+    
     mutating public func visitStrong(_ strong: Strong) -> NSAttributedString {
         let result = NSMutableAttributedString()
         
