@@ -9,16 +9,16 @@ import UIKit
 import Markdown
 
 public struct Markdownosaur: MarkupVisitor {
-  static let font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.systemFont(ofSize: 17.0))
-  static let monospacedFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.monospacedSystemFont(ofSize: 16.0, weight: .regular))
-  static let monospacedDigitFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.monospacedDigitSystemFont(ofSize: 17.0, weight: .regular))
-  static let color = UIColor.label
-  static let codeColor = UIColor.systemGray
-  static let quoteColor = UIColor.systemGray
-  static let linkColor = UIColor.systemBlue
-  static let listLines: UInt = 2
-  static let paragraphLines: UInt = 2
-  static let codeLines: UInt = 1
+  let font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.systemFont(ofSize: 17.0))
+  let monospacedFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.monospacedSystemFont(ofSize: 16.0, weight: .regular))
+  let monospacedDigitFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.monospacedDigitSystemFont(ofSize: 17.0, weight: .regular))
+  let color = UIColor.label
+  let codeColor = UIColor.systemGray
+  let quoteColor = UIColor.systemGray
+  let linkColor = UIColor.systemBlue
+  let listLines: UInt = 1
+  let paragraphLines: UInt = 2
+  let codeLines: UInt = 1
   
   public init() {}
   
@@ -37,7 +37,7 @@ public struct Markdownosaur: MarkupVisitor {
   }
   
   mutating public func visitText(_ text: Text) -> NSAttributedString {
-    return NSAttributedString(string: text.plainText, attributes: [.font: Markdownosaur.font, .foregroundColor: Markdownosaur.color])
+    return NSAttributedString(string: text.plainText, attributes: [.font: font, .foregroundColor: color])
   }
   
   mutating public func visitEmphasis(_ emphasis: Emphasis) -> NSAttributedString {
@@ -72,7 +72,7 @@ public struct Markdownosaur: MarkupVisitor {
     }
     
     if paragraph.hasSuccessor {
-      result.append(paragraph.isContainedInList ? .newline(withFont: Markdownosaur.font, count: Markdownosaur.listLines) : .newline(withFont: Markdownosaur.font, count: Markdownosaur.paragraphLines))
+      result.append(paragraph.isContainedInList ? .newline(withFont: font, count: listLines) : .newline(withFont: font, count: paragraphLines))
     }
     
     return result
@@ -88,7 +88,7 @@ public struct Markdownosaur: MarkupVisitor {
     result.applyHeading(withLevel: heading.level)
     
     if heading.hasSuccessor {
-      result.append(.newline(withFont: Markdownosaur.font, count: Markdownosaur.paragraphLines))
+      result.append(.newline(withFont: font, count: paragraphLines))
     }
     
     return result
@@ -103,20 +103,20 @@ public struct Markdownosaur: MarkupVisitor {
     
     let url = link.destination != nil ? URL(string: link.destination!) : nil
     
-    result.applyLink(withURL: url)
+    result.applyLink(withURL: url, color: linkColor)
     
     return result
   }
   
   mutating public func visitInlineCode(_ inlineCode: InlineCode) -> NSAttributedString {
-    return NSAttributedString(string: inlineCode.code, attributes: [.font: Markdownosaur.monospacedFont, .foregroundColor: Markdownosaur.codeColor])
+    return NSAttributedString(string: inlineCode.code, attributes: [.font: monospacedFont, .foregroundColor: codeColor])
   }
   
   public func visitCodeBlock(_ codeBlock: CodeBlock) -> NSAttributedString {
-    let result = NSMutableAttributedString(string: codeBlock.code, attributes: [.font: Markdownosaur.monospacedFont, .foregroundColor: Markdownosaur.codeColor])
+    let result = NSMutableAttributedString(string: codeBlock.code, attributes: [.font: monospacedFont, .foregroundColor: codeColor])
     
     if codeBlock.hasSuccessor {
-      result.append(.newline(withFont: Markdownosaur.font, count: Markdownosaur.codeLines))
+      result.append(.newline(withFont: font, count: codeLines))
     }
     
     return result
@@ -145,7 +145,7 @@ public struct Markdownosaur: MarkupVisitor {
       let baseLeftMargin: CGFloat = 15.0
       let leftMarginOffset = baseLeftMargin + (20.0 * CGFloat(unorderedList.listDepth))
       let spacingFromIndex: CGFloat = 8.0
-      let bulletWidth = ceil(NSAttributedString(string: "•", attributes: [.font: Markdownosaur.font]).size().width)
+      let bulletWidth = ceil(NSAttributedString(string: "•", attributes: [.font: font]).size().width)
       let firstTabLocation = leftMarginOffset + bulletWidth
       let secondTabLocation = firstTabLocation + spacingFromIndex
       
@@ -157,8 +157,8 @@ public struct Markdownosaur: MarkupVisitor {
       listItemParagraphStyle.headIndent = secondTabLocation
       
       listItemAttributes[.paragraphStyle] = listItemParagraphStyle
-      listItemAttributes[.font] = Markdownosaur.font
-      listItemAttributes[.foregroundColor] = Markdownosaur.color
+      listItemAttributes[.font] = font
+      listItemAttributes[.foregroundColor] = color
       listItemAttributes[.listDepth] = unorderedList.listDepth
       
       let listItemAttributedString = visit(listItem).mutableCopy() as! NSMutableAttributedString
@@ -168,7 +168,7 @@ public struct Markdownosaur: MarkupVisitor {
     }
     
     if unorderedList.hasSuccessor {
-      result.append(.newline(withFont: Markdownosaur.font, count: Markdownosaur.paragraphLines))
+      result.append(.newline(withFont: font, count: paragraphLines))
     }
     
     return result
@@ -182,7 +182,7 @@ public struct Markdownosaur: MarkupVisitor {
     }
     
     if listItem.hasSuccessor {
-      result.append(.newline(withFont: Markdownosaur.font, count: Markdownosaur.listLines))
+      result.append(.newline(withFont: font, count: listLines))
     }
     
     return result
@@ -202,7 +202,7 @@ public struct Markdownosaur: MarkupVisitor {
       
       // Grab the highest number to be displayed and measure its width (yes normally some digits are wider than others but since we're using the numeral mono font all will be the same width in this case)
       let highestNumberInList = orderedList.childCount
-      let numeralColumnWidth = ceil(NSAttributedString(string: "\(highestNumberInList).", attributes: [.font: Markdownosaur.monospacedDigitFont]).size().width)
+      let numeralColumnWidth = ceil(NSAttributedString(string: "\(highestNumberInList).", attributes: [.font: monospacedDigitFont]).size().width)
       
       let spacingFromIndex: CGFloat = 8.0
       let firstTabLocation = leftMarginOffset + numeralColumnWidth
@@ -216,15 +216,15 @@ public struct Markdownosaur: MarkupVisitor {
       listItemParagraphStyle.headIndent = secondTabLocation
       
       listItemAttributes[.paragraphStyle] = listItemParagraphStyle
-      listItemAttributes[.font] = Markdownosaur.font
-      listItemAttributes[.foregroundColor] = Markdownosaur.color
+      listItemAttributes[.font] = font
+      listItemAttributes[.foregroundColor] = color
       listItemAttributes[.listDepth] = orderedList.listDepth
       
       let listItemAttributedString = visit(listItem).mutableCopy() as! NSMutableAttributedString
       
       // Same as the normal list attributes, but for prettiness in formatting we want to use the cool monospaced numeral font
       var numberAttributes = listItemAttributes
-      numberAttributes[.font] = Markdownosaur.monospacedDigitFont
+      numberAttributes[.font] = monospacedDigitFont
       
       let numberAttributedString = NSAttributedString(string: "\t\(index + 1).\t", attributes: numberAttributes)
       listItemAttributedString.insert(numberAttributedString, at: 0)
@@ -233,7 +233,7 @@ public struct Markdownosaur: MarkupVisitor {
     }
     
     if orderedList.hasSuccessor {
-      result.append(orderedList.isContainedInList ? .newline(withFont: Markdownosaur.font, count: Markdownosaur.listLines) : .newline(withFont: Markdownosaur.font, count: Markdownosaur.paragraphLines))
+      result.append(orderedList.isContainedInList ? .newline(withFont: font, count: listLines) : .newline(withFont: font, count: paragraphLines))
     }
     
     return result
@@ -255,19 +255,19 @@ public struct Markdownosaur: MarkupVisitor {
       quoteParagraphStyle.headIndent = leftMarginOffset
       
       quoteAttributes[.paragraphStyle] = quoteParagraphStyle
-      quoteAttributes[.font] = Markdownosaur.font
+      quoteAttributes[.font] = font
       quoteAttributes[.listDepth] = blockQuote.quoteDepth
       
       let quoteAttributedString = visit(child).mutableCopy() as! NSMutableAttributedString
       quoteAttributedString.insert(NSAttributedString(string: "\t", attributes: quoteAttributes), at: 0)
       
-      quoteAttributedString.addAttribute(.foregroundColor, value: Markdownosaur.quoteColor)
+      quoteAttributedString.addAttribute(.foregroundColor, value: quoteColor)
       
       result.append(quoteAttributedString)
     }
     
     if blockQuote.hasSuccessor {
-      result.append(.newline(withFont: Markdownosaur.font, count: Markdownosaur.paragraphLines))
+      result.append(.newline(withFont: font, count: paragraphLines))
     }
     
     return result
@@ -295,16 +295,16 @@ extension NSMutableAttributedString {
     }
   }
   
-  func applyLink(withURL url: URL?) {
-    addAttribute(.foregroundColor, value: Markdownosaur.linkColor)
+  func applyLink(withURL url: URL?, color: UIColor) {
+    addAttribute(.foregroundColor, value: color)
     
     if let url = url {
       addAttribute(.link, value: url)
     }
   }
   
-  func applyBlockquote() {
-    addAttribute(.foregroundColor, value: Markdownosaur.quoteColor)
+  func applyBlockquote(color: UIColor) {
+    addAttribute(.foregroundColor, value: color)
   }
   
   func applyHeading(withLevel headingLevel: Int) {
