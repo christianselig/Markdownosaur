@@ -168,7 +168,7 @@ public struct Markdownosaur: MarkupVisitor {
     }
     
     if unorderedList.hasSuccessor {
-      result.append(unorderedList.isContainedInList ? .newline(withFont: Markdownosaur.font, count: Markdownosaur.listLines) : .newline(withFont: Markdownosaur.font, count: Markdownosaur.paragraphLines))
+      result.append(.newline(withFont: Markdownosaur.font, count: Markdownosaur.paragraphLines))
     }
     
     return result
@@ -413,3 +413,4 @@ extension NSAttributedString {
     return NSAttributedString(string: line, attributes: [.font: font])
   }
 }
+
