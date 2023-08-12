@@ -327,9 +327,14 @@ extension UIFont {
     var existingTraits = fontDescriptor.symbolicTraits
     existingTraits.insert(newTraits)
     
+    let font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.systemFont(ofSize: 17.0))
+    let scale = font.pointSize/17.0
+    
     guard let newFontDescriptor = fontDescriptor.withSymbolicTraits(existingTraits) else { return self }
     
-    let newFont = UIFont(descriptor: newFontDescriptor, size: newPointSize ?? pointSize)
+    let newSize = newPointSize != nil ? newPointSize!/scale : pointSize/scale
+    
+    let newFont = UIFont(descriptor: newFontDescriptor, size: newSize)
     
     return UIFontMetrics(forTextStyle: .body).scaledFont(for: newFont)
   }
