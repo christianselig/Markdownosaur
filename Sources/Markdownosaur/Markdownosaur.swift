@@ -12,6 +12,7 @@ public struct Markdownosaur: MarkupVisitor {
   let font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.systemFont(ofSize: 17.0))
   let monospacedFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.monospacedSystemFont(ofSize: 16.0, weight: .regular))
   let monospacedDigitFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.monospacedDigitSystemFont(ofSize: 17.0, weight: .regular))
+  let listNewLineFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.systemFont(ofSize: 8.0))
   let color = UIColor.label
   let codeColor = UIColor.systemGray
   let quoteColor = UIColor.systemGray
@@ -182,7 +183,7 @@ public struct Markdownosaur: MarkupVisitor {
     }
     
     if listItem.hasSuccessor {
-      result.append(.newline(withFont: font, count: listLines))
+      result.append(.newline(withFont: listNewLineFont, count: listLines))
     }
     
     return result
@@ -327,7 +328,10 @@ extension UIFont {
     existingTraits.insert(newTraits)
     
     guard let newFontDescriptor = fontDescriptor.withSymbolicTraits(existingTraits) else { return self }
-    return UIFont(descriptor: newFontDescriptor, size: newPointSize ?? pointSize)
+    
+    let newFont = UIFont(descriptor: newFontDescriptor, size: newPointSize ?? pointSize)
+    
+    return UIFontMetrics(forTextStyle: .body).scaledFont(for: newFont)
   }
 }
 
