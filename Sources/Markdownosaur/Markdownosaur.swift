@@ -3,6 +3,7 @@
 //  Markdownosaur
 //
 //  Created by Christian Selig on 2021-11-02.
+//  Additional functionality by Kerem Erkan
 //
 
 import UIKit
@@ -13,10 +14,10 @@ public struct Markdownosaur: MarkupVisitor {
   let monospacedFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.monospacedSystemFont(ofSize: 16.0, weight: .regular))
   let monospacedDigitFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.monospacedDigitSystemFont(ofSize: 17.0, weight: .regular))
   let listNewLineFont = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.systemFont(ofSize: 8.0))
-  let color = UIColor.label
-  let codeColor = UIColor.systemGray
-  let quoteColor = UIColor.systemGray
-  let linkColor = UIColor.systemBlue
+  var textColor = UIColor.label
+  var codeColor = UIColor.systemGray
+  var quoteColor = UIColor.systemGray
+  var linkColor = UIColor.link // Warning: If you aim to use the markdown string in a UITextView, the link color is determined by its tintColor.
   let listLines: UInt = 1
   let paragraphLines: UInt = 2
   let codeLines: UInt = 1
@@ -38,7 +39,7 @@ public struct Markdownosaur: MarkupVisitor {
   }
   
   mutating public func visitText(_ text: Text) -> NSAttributedString {
-    return NSAttributedString(string: text.plainText, attributes: [.font: font, .foregroundColor: color])
+    return NSAttributedString(string: text.plainText, attributes: [.font: font, .foregroundColor: textColor])
   }
   
   mutating public func visitEmphasis(_ emphasis: Emphasis) -> NSAttributedString {
@@ -159,7 +160,7 @@ public struct Markdownosaur: MarkupVisitor {
       
       listItemAttributes[.paragraphStyle] = listItemParagraphStyle
       listItemAttributes[.font] = font
-      listItemAttributes[.foregroundColor] = color
+      listItemAttributes[.foregroundColor] = textColor
       listItemAttributes[.listDepth] = unorderedList.listDepth
       
       let listItemAttributedString = visit(listItem).mutableCopy() as! NSMutableAttributedString
@@ -218,7 +219,7 @@ public struct Markdownosaur: MarkupVisitor {
       
       listItemAttributes[.paragraphStyle] = listItemParagraphStyle
       listItemAttributes[.font] = font
-      listItemAttributes[.foregroundColor] = color
+      listItemAttributes[.foregroundColor] = textColor
       listItemAttributes[.listDepth] = orderedList.listDepth
       
       let listItemAttributedString = visit(listItem).mutableCopy() as! NSMutableAttributedString
@@ -324,15 +325,19 @@ extension NSMutableAttributedString {
 
 extension UIFont {
   func apply(newTraits: UIFontDescriptor.SymbolicTraits, newPointSize: CGFloat? = nil) -> UIFont {
+    
+    var scale = 1.0
     var existingTraits = fontDescriptor.symbolicTraits
     existingTraits.insert(newTraits)
     
-    let font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.systemFont(ofSize: 17.0))
-    let scale = font.pointSize/17.0
+    if newPointSize == nil {
+      let font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.systemFont(ofSize: 17.0))
+      scale = font.pointSize/17.0
+    }
     
     guard let newFontDescriptor = fontDescriptor.withSymbolicTraits(existingTraits) else { return self }
     
-    let newSize = newPointSize != nil ? newPointSize!/scale : pointSize/scale
+    let newSize = newPointSize != nil ? newPointSize! : pointSize/scale
     
     let newFont = UIFont(descriptor: newFontDescriptor, size: newSize)
     
@@ -423,3 +428,29 @@ extension NSAttributedString {
   }
 }
 
+extension String {
+  /// Creates and returns a markdown formatted string.
+  func markdownString(alignment: NSTextAlignment = .natural, textColor: UIColor = .label, codeColor: UIColor = .systemGray, quoteColor: UIColor = .systemGray, linkColor: UIColor = .link) -> NSAttributedString {
+    let document = Document(parsing: self)
+    
+    var markdownosaur = Markdownosaur()
+    markdownosaur.textColor = textColor
+    markdownosaur.codeColor = codeColor
+    markdownosaur.quoteColor = quoteColor
+    markdownosaur.linkColor = linkColor
+    
+    let attributedString = markdownosaur.attributedString(from: document)
+    
+    if alignment != .natural {
+      let aligned = NSMutableAttributedString(attributedString: attributedString)
+      
+      let style = NSMutableParagraphStyle()
+      style.alignment = alignment
+      
+      aligned.addAttribute(.paragraphStyle, value: style)
+      return aligned
+    }
+    
+    return attributedString
+  }
+}
